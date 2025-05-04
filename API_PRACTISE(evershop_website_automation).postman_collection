@@ -1,0 +1,441 @@
+{
+	"info": {
+		"_postman_id": "d69cbf8e-c6bf-4f08-bab6-ba19a3fd9d88",
+		"name": "API_PRACTISE",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "40569954"
+	},
+	"item": [
+		{
+			"name": "search",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const responseBody = pm.response.json()\r",
+							"pm.test(\"verify status code is 200\",()=>{\r",
+							"     pm.expect(200).to.eql(pm.response.code)\r",
+							"})\r",
+							"// console.log(responseBody.eContext.graphqlResponse.e248uix4m5ibqamf.items[0].productId)\r",
+							"// console.log(responseBody.eContext.graphqlResponse.e248uix4m5ibqamf.items[0].name)\r",
+							"\r",
+							"const item = responseBody.eContext.graphqlResponse.e248uix4m5ibqamf.items[0];\r",
+							"\r",
+							"\r",
+							"\r",
+							"const actualResult = item.name;\r",
+							"const productId = item.productId;\r",
+							"const expecetedResult = pm.collectionVariables.get(\"search_product\")\r",
+							"\r",
+							"pm.test(\"verify valid searched product is showing\",()=>{\r",
+							"   pm.expect(actualResult).to.include(expecetedResult)\r",
+							"})\r",
+							"\r",
+							"pm.collectionVariables.set(\"productName\",actualResult)\r",
+							"\r",
+							"const productName = (actualResult.split(' ').join('-')+ `-${productId}`).toLowerCase();\r",
+							"pm.collectionVariables.set(\"product_name\", productName)\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"search_product\",\"Nike react infinity\")"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://demo.evershop.io/search?keyword={{search_product}}&ajax=true",
+					"protocol": "https",
+					"host": [
+						"demo",
+						"evershop",
+						"io"
+					],
+					"path": [
+						"search"
+					],
+					"query": [
+						{
+							"key": "keyword",
+							"value": "{{search_product}}"
+						},
+						{
+							"key": "ajax",
+							"value": "true"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ProductDetails",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const responseBody = pm.response.json()\r",
+							"pm.test(\"verify status code is 200\",()=>{\r",
+							"     pm.expect(200).to.eql(pm.response.code)\r",
+							"})\r",
+							"pm.test(\"verify success is true\",()=>{\r",
+							"     pm.expect(true).to.eql(responseBody.success)\r",
+							"})\r",
+							"\r",
+							"\r",
+							"const getSKU = responseBody.eContext.graphqlResponse.e248uix4m5ibqamf.items[0].sku;\r",
+							"// console.log(getSKU)\r",
+							"pm.collectionVariables.set(\"productSku\",getSKU)"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "// {\r\n//     \"qty\":\"3\",\r\n//     \"sku\":\"NJC78436-White-S\"\r\n// }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://demo.evershop.io/search?keyword={{search_product}}&ajax=true",
+					"protocol": "https",
+					"host": [
+						"demo",
+						"evershop",
+						"io"
+					],
+					"path": [
+						"search"
+					],
+					"query": [
+						{
+							"key": "keyword",
+							"value": "{{search_product}}"
+						},
+						{
+							"key": "ajax",
+							"value": "true"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "AddToCart",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"verify status code is 200\",()=>{\r",
+							"     pm.expect(200).to.eql(pm.response.code)\r",
+							"})\r",
+							"const  responseBody = pm.response.json()\r",
+							"const produtId = responseBody.data.item.uuid\r",
+							"pm.collectionVariables.set(\"product_id\",produtId)"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"function getRandomInt(min, max) {\r",
+							"  const minCeiled = Math.ceil(min);\r",
+							"  const maxFloored = Math.floor(max);\r",
+							"  return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled); // The maximum is exclusive and the minimum is inclusive\r",
+							"}\r",
+							"\r",
+							"const productQty = getRandomInt(2,4)\r",
+							"pm.collectionVariables.set(\"productQty\",productQty)\r",
+							"\r",
+							"\r",
+							"const responseBody = pm.response.json()\r",
+							"\r",
+							"const productId = responseBody.data.item.uuid;\r",
+							"pm.collectionVariables.set(\"product_id\",productId)"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"qty\": \"{{productQty}}\",\r\n    \"sku\": \"{{productSku}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://demo.evershop.io/api/cart/mine/items?ajax=true",
+					"protocol": "https",
+					"host": [
+						"demo",
+						"evershop",
+						"io"
+					],
+					"path": [
+						"api",
+						"cart",
+						"mine",
+						"items"
+					],
+					"query": [
+						{
+							"key": "ajax",
+							"value": "true"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PreviewCart",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"verify status code is 200\",()=>{\r",
+							" pm.expect(200).to.eql(pm.response.code)\r",
+							"});\r",
+							"const response = pm.response.json();\r",
+							"try{\r",
+							"pm.collectionVariables.set(\"pre_total_count\", response.eContext.graphqlResponse.e248uix4m5ibqb7x.totalQty);\r",
+							"}\r",
+							"catch(error){\r",
+							"pm.collectionVariables.set(\"pre_total_count\",0)\r",
+							"}\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Cookie",
+						"value": "__stripe_mid=90f00318-6d82-4d13-a229-7903de9dcfbae6bced; sid=s%3AQ7jTv1q15qxUMznCwUqgjhy8gcir9_CM.i%2Btg8sjQlZKTXGMVQNZEVxXFxwlWa3RYwSbZm6fl5WU",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://demo.evershop.io/cart?ajax=true",
+					"protocol": "https",
+					"host": [
+						"demo",
+						"evershop",
+						"io"
+					],
+					"path": [
+						"cart"
+					],
+					"query": [
+						{
+							"key": "ajax",
+							"value": "true"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PostviewCart",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"verify status code is 200\",()=>{\r",
+							" pm.expect(200).to.eql(pm.response.code)\r",
+							"});\r",
+							"\r",
+							"const response = pm.response.json();\r",
+							"const cartId = response.eContext.graphqlResponse.e248uix4m5ibqb7y.uuid;\r",
+							"const current_Total = pm.collectionVariables.set(\"pre_total_count\", response.eContext.graphqlResponse.e248uix4m5ibqb7x.totalQty);\r",
+							"const ExpectedTotal = pm.collectionVariables.get(\"pre_total_count\") + pm.collectionVariables.get(\"productqty\")\r",
+							"\r",
+							"pm.test(\"verify total cart qty\",()=>{\r",
+							"pm.expect(\"ExpectedTotal\").to.eql(\"current_Total\")\r",
+							"});\r",
+							"\r",
+							"pm.collectionVariables.set(\"cart_id\",cartId)\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "ajax",
+						"value": "",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://demo.evershop.io/api/cart/mine/items?ajax=true",
+					"protocol": "https",
+					"host": [
+						"demo",
+						"evershop",
+						"io"
+					],
+					"path": [
+						"api",
+						"cart",
+						"mine",
+						"items"
+					],
+					"query": [
+						{
+							"key": "ajax",
+							"value": "true"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "deletefromcart",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "https://demo.evershop.io/api/cart/{{cart_id}}/items/{{product_id}}",
+					"protocol": "https",
+					"host": [
+						"demo",
+						"evershop",
+						"io"
+					],
+					"path": [
+						"api",
+						"cart",
+						"{{cart_id}}",
+						"items",
+						"{{product_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "anothercart",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Cookie",
+						"value": "__stripe_mid=90f00318-6d82-4d13-a229-7903de9dcfbae6bced; sid=s%3AQ7jTv1q15qxUMznCwUqgjhy8gcir9_CM.i%2Btg8sjQlZKTXGMVQNZEVxXFxwlWa3RYwSbZm6fl5WU",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://demo.evershop.io/cart?ajax=true",
+					"protocol": "https",
+					"host": [
+						"demo",
+						"evershop",
+						"io"
+					],
+					"path": [
+						"cart"
+					],
+					"query": [
+						{
+							"key": "ajax",
+							"value": "true"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "search_product",
+			"value": ""
+		},
+		{
+			"key": "productName",
+			"value": ""
+		},
+		{
+			"key": "product_name",
+			"value": ""
+		},
+		{
+			"key": "productSku",
+			"value": ""
+		},
+		{
+			"key": "productqty",
+			"value": ""
+		},
+		{
+			"key": "productQty",
+			"value": ""
+		},
+		{
+			"key": "pre_total_count",
+			"value": ""
+		}
+	]
+}
